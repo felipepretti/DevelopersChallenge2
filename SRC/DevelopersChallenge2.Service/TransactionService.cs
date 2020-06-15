@@ -89,7 +89,8 @@ namespace DevelopersChallenge2.Service
 
                 var transactionsExists = Repository.GetAllActives()
                     .Where(x => x.TransactionDate >= startDate
-                             && x.TransactionDate <= endDate)
+                             && x.TransactionDate <= endDate
+                             && x.IdBank == bank.Id)
                     .Select(x => x.Hash)
                     .ToList();
 
