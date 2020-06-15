@@ -1,7 +1,11 @@
-﻿using DevelopersChallenge2.Service;
+﻿using DevelopersChallenge2.Models;
+using DevelopersChallenge2.Service;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -9,250 +13,107 @@ namespace DevelopersChallenge2.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(string message, bool? error)
         {
-            var ofxSource = @"<OFX>
-<SIGNONMSGSRSV1>
-<SONRS>
-<STATUS>
-<CODE>0
-<SEVERITY>INFO
-</STATUS>
-<DTSERVER>20140318100000[-03:EST]
-<LANGUAGE>POR
-</SONRS>
-</SIGNONMSGSRSV1>
-<BANKMSGSRSV1>
-<STMTTRNRS>
-<TRNUID>1001
-<STATUS>
-<CODE>0
-<SEVERITY>INFO
-</STATUS>
-<STMTRS>
-<CURDEF>BRL
-<BANKACCTFROM>
-<BANKID>0341
-<ACCTID>7037300576
-<ACCTTYPE>CHECKING
-</BANKACCTFROM>
-<BANKTRANLIST>
-<DTSTART>20140201100000[-03:EST]
-<DTEND>2014020100000[-03:EST]
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140203100000[-03:EST]
-<TRNAMT>-140.00
-<MEMO>CXE     001958 SAQUE    
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140204100000[-03:EST]
-<TRNAMT>-102.19
-<MEMO>RSHOP-SUPERMERCAD-03/02 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140204100000[-03:EST]
-<TRNAMT>-4000.00
-<MEMO>TBI 0304.40719-0     C/C
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140204100000[-03:EST]
-<TRNAMT>-39.00
-<MEMO>TAR PACOTE MENS    01/14
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140204100000[-03:EST]
-<TRNAMT>-12.00
-<MEMO>TAR DOC INTERNET        
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>CREDIT
-<DTPOSTED>20140204100000[-03:EST]
-<TRNAMT>435.00
-<MEMO>DOC 399.1934NIBO SOF CUR
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140205100000[-03:EST]
-<TRNAMT>-2000.00
-<MEMO>INT APLICACAO SPECIAL RF
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140205100000[-03:EST]
-<TRNAMT>-979.16
-<MEMO>SISDEB  AUXIL PRED RIO  
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140210100000[-03:EST]
-<TRNAMT>-19.00
-<MEMO>RSHOP-MEGA MATE  -07/02 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140210100000[-03:EST]
-<TRNAMT>-314.45
-<MEMO>RSHOP-SUPERMERCAD-09/02 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140210100000[-03:EST]
-<TRNAMT>-200.00
-<MEMO>SAQUE 24H 12725743      
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140210100000[-03:EST]
-<TRNAMT>-203.15
-<MEMO>SISDEB  SEM PARAR       
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>CREDIT
-<DTPOSTED>20140210100000[-03:EST]
-<TRNAMT>16766.28
-<MEMO>TED 399.1934NIBO SOF CUR
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140211100000[-03:EST]
-<TRNAMT>-43.00
-<MEMO>RSHOP-BIBI SUCOS -10/02 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140211100000[-03:EST]
-<TRNAMT>-79.73
-<MEMO>RSHOP-MDL        -10/02 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140211100000[-03:EST]
-<TRNAMT>-2000.00
-<MEMO>TBI 0304.40719-0     C/C
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140211100000[-03:EST]
-<TRNAMT>-10000.00
-<MEMO>INT APLICACAO SPECIAL RF
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140212100000[-03:EST]
-<TRNAMT>-95.00
-<MEMO>RSHOP-LEITERIA MI-11/02 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140212100000[-03:EST]
-<TRNAMT>-7296.12
-<MEMO>SISDEB  CARTAO AMEX     
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140213100000[-03:EST]
-<TRNAMT>-62.90
-<MEMO>RSHOP-TOK E STOK -12/02 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140217100000[-03:EST]
-<TRNAMT>-224.90
-<MEMO>RSHOP-SUPERMERCAD-15/02 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140217100000[-03:EST]
-<TRNAMT>-720.70
-<MEMO>SISDEB  SUL AMERIC SEG  
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140217100000[-03:EST]
-<TRNAMT>-529.71
-<MEMO>CREDIARIO AUT PERS12/12 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>CREDIT
-<DTPOSTED>20140217100000[-03:EST]
-<TRNAMT>1556.91
-<MEMO>INT RESGATE   SPECIAL RF
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140218100000[-03:EST]
-<TRNAMT>-676.26
-<MEMO>DOC INT 516011 microlux 
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>CREDIT
-<DTPOSTED>20140218100000[-03:EST]
-<TRNAMT>501.12
-<MEMO>INT RESGATE   SPECIAL RF
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>CREDIT
-<DTPOSTED>20140218100000[-03:EST]
-<TRNAMT>501.12
-<MEMO>INT RESGATE   SPECIAL RF
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140219100000[-03:EST]
-<TRNAMT>-2669.46
-<MEMO>INT PAG TIT BANCO 745   
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140219100000[-03:EST]
-<TRNAMT>-500.00
-<MEMO>TBI 8123.05928-2ana     
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20140219100000[-03:EST]
-<TRNAMT>-345.00
-<MEMO>CH COMPENSADO 399 000324
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>CREDIT
-<DTPOSTED>20140219100000[-03:EST]
-<TRNAMT>3001.06
-<MEMO>INT RESGATE   SPECIAL RF
-</STMTTRN>
-</BANKTRANLIST>
-<LEDGERBAL>
-<BALAMT>-4021.44
-<DTASOF>20140318100000[-03:EST]
-</LEDGERBAL>
-</STMTRS>
-</STMTTRNRS>
-</BANKMSGSRSV1>
-</OFX>";
-
             var transactionService = new TransactionService();
-            transactionService.ProcessOfx(ofxSource);
+            var transactions = transactionService
+                .GetAllActives()
+                .OrderBy(x => x.TransactionDate)
+                .ToList()
+                .Select(x => new TransactionViewModel
+                {
+                    Bank = x.Bank.Name,
+                    Description = x.Description,
+                    TransactionDate = x.TransactionDate,
+                    TransactionType = x.TransactionType,
+                    Value = x.Value < 0
+                        ? "<span style='color:red'>" + x.Value.ToString("C") + "</span>"
+                        : "<span style='color:blue'>" + x.Value.ToString("C") + "</span>"
+                })
+                .ToList();
 
-            return View();
+            var homeViewModel = new HomeViewModel
+            {
+                Message = message,
+                Error = error,
+                DatagridData = transactions
+            };
+
+            return View(homeViewModel);
         }
 
-        public ActionResult About()
+        [HttpPost]
+        public ActionResult Upload()
         {
-            ViewBag.Message = "Your application description page.";
+            try
+            {
+                if (Request.Files.Count > 0 && Request.Files[0].ContentLength > 0)
+                {
+                    if (!System.IO.Directory.Exists(Server.MapPath("~/Temp")))
+                    {
+                        System.IO.Directory.CreateDirectory(Server.MapPath("~/Temp"));
+                    }
 
-            return View();
-        }
+                    var file = Request.Files[0];
+                    var fileName = Path.GetFileName(file.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Temp"), fileName);
+                    file.SaveAs(path);
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
+                    var fileContent = System.IO.File.ReadAllLines(path);
+                    System.IO.File.Delete(path);
 
-            return View();
+                    var ofxSource = new StringBuilder();
+
+                    foreach (var line in fileContent)
+                    {
+                        if (line.Trim().Length == 0)
+                            continue;
+
+                        if (line[0] != '<')
+                        {
+                            var keyPair = line.Split(':');
+                            switch (keyPair[0])
+                            {
+                                case "DATA":
+                                    if (keyPair[1] != "OFXSGML")
+                                    {
+                                        throw new Exception("Formato do arquivo OFX inválido. Esperado o formato OFXSGML.");
+                                    };
+                                    break;
+                                case "VERSION":
+                                    if (keyPair[1] != "102")
+                                    {
+                                        throw new Exception("Versão do arquivo não suportada. Esperado a versão 1.0.2.");
+                                    };
+                                    break;
+                                case "COMPRESSION":
+                                    if (keyPair[1] != "NONE")
+                                    {
+                                        throw new Exception("O arquivo OFX não deve estar comprimido.");
+                                    };
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            ofxSource.AppendLine(line);
+                        }
+                    }
+
+                    var transactionService = new TransactionService();
+                    transactionService.ProcessOfx(ofxSource.ToString());
+                }
+                else
+                {
+                    throw new Exception("Selecione um arquivo OFX para conciliação.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", new { message = ex.Message, error = true });
+            }
+
+            return RedirectToAction("Index", new { message = "A importação foi realizada com sucesso.", error = false });
         }
     }
 }

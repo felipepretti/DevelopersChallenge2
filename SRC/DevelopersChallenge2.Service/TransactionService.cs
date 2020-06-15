@@ -25,6 +25,9 @@ namespace DevelopersChallenge2.Service
 
         public void ProcessOfx(string ofxSource)
         {
+            if (string.IsNullOrEmpty(ofxSource))
+                throw new Exception("O conteúdo do arquivo OFX é inválido.");
+
             using (var scope = new System.Transactions.TransactionScope())
             {
                 var transactions = new List<Transaction>();
@@ -35,6 +38,9 @@ namespace DevelopersChallenge2.Service
 
                 var bankService = new BankService(RepositoryFactory);
                 var bank = bankService.GetByCode(bankCode);
+
+                if (bank == null)
+                    throw new Exception(string.Format("Necessário cadastrar o banco \"{0}\" antes de importar as transações.", bankCode));
 
                 foreach (XmlNode node in bankTranList)
                 {
@@ -98,23 +104,30 @@ namespace DevelopersChallenge2.Service
 
         private XmlDocument GenerateXmlFromOfx(string ofxSource)
         {
-            var matches = Regex.Matches(ofxSource, "\\<\\w+\\>([\\w \\[\\]:\\-\\+.!?\\/]+)");
-
-            for (int i = 0; i < matches.Count; i++)
+            try
             {
-                var tagName = Regex.Match(matches[i].Value, "(?<=\\<)(.*?)(?=\\>)");
-                var newTag = matches[i].Value + "</" + tagName + ">";
+                var matches = Regex.Matches(ofxSource, "\\<\\w+\\>([\\w \\[\\]:\\-\\+.!?\\/]+)");
 
-                if (ofxSource.IndexOf(newTag) == -1)
+                for (int i = 0; i < matches.Count; i++)
                 {
-                    ofxSource = ofxSource.Replace(matches[i].Value, newTag);
+                    var tagName = Regex.Match(matches[i].Value, "(?<=\\<)(.*?)(?=\\>)");
+                    var newTag = matches[i].Value + "</" + tagName + ">";
+
+                    if (ofxSource.IndexOf(newTag) == -1)
+                    {
+                        ofxSource = ofxSource.Replace(matches[i].Value, newTag);
+                    }
                 }
+
+                var xmlDoc = new XmlDocument();
+                xmlDoc.LoadXml(ofxSource);
+
+                return xmlDoc;
             }
-
-            var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(ofxSource);
-
-            return xmlDoc;
+            catch
+            {
+                throw new Exception("Não foi possível realizar a leitura do arquivo.");
+            }
         }
 
         private static string GetHash(HashAlgorithm hashAlgorithm, string input)
